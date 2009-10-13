@@ -56,14 +56,14 @@ def message_box(message)
   tell app "Finder" to display dialog "#{message}" with title "Pomodoro ticker"  buttons {"OK"}
   HEREDOC
 
-  system("osascript -e '#{appscript}'")
+  system("osascript -e '#{appscript}' &> /dev/null")
 end
 
 def confirm_dialog(message)
   appscript = <<-HEREDOC
   tell app "Finder" to display dialog "#{message}" with title "Pomodoro ticker"
   HEREDOC
-  system("osascript -e '#{appscript}'")  
+  system("osascript -e '#{appscript}' &> /dev/null")  
 end
 
 puts "Staring up pomodoro timer...."
@@ -78,6 +78,5 @@ loop {
   puts break_is_over_message
   `#{break_is_over_command}`
   message_box(break_is_over_message)
-  # break unless continue?("Continue working Y/N ?  : ")
   break unless confirm_dialog("Continue working ????")
 }
