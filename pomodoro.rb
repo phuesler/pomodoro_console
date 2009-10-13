@@ -33,50 +33,41 @@ VOICES = {
  "Bubbles"    =>"Bubbles",
  "Deranged"   =>"Deranged"
 }
-voice = VOICES["Vicki"]
-break_command = "say -v #{voice} #{break_message}"
-restart_command = "say -v #{voice} #{restart_message}"
-break_is_over_command = "say -v #{voice} #{break_is_over_message}"
+VOICE = VOICES["Vicki"]
 
-def continue?(question)
-  print question
-  response = gets
-  return case response.chomp.downcase
-    when "n"
-      false
-    when "y"
-      true
-    else
-      continue?(question) 
-  end
+def say(message)
+  `say -v #{VOICE} #{message}`
 end
 
-def message_box(message)
-  appscript = <<-HEREDOC
-  tell app "Finder" to display dialog "#{message}" with title "Pomodoro ticker"  buttons {"OK"}
-  HEREDOC
-
+def show_dialog(message, buttons = [])
+  appscript = "tell app \"Finder\" to display dialog \"#{message}\" with title \"Pomodoro ticker\""
+  if buttons.any?
+    appscript += " buttons {#{buttons.map{|button| "\"#{button}\""}.join(",")}}"
+  end
   system("osascript -e '#{appscript}' &> /dev/null")
 end
 
+def message_box(message)
+  show_dialog(message,["OK"])
+end
+
 def confirm_dialog(message)
-  appscript = <<-HEREDOC
-  tell app "Finder" to display dialog "#{message}" with title "Pomodoro ticker"
-  HEREDOC
-  system("osascript -e '#{appscript}' &> /dev/null")  
+  show_dialog(message)
+end
+
+def display_message(message)
+  puts message
+  say(message)
+  message_box(message)
 end
 
 puts "Staring up pomodoro timer...."
 loop {
   puts restart_message
-  `#{restart_command}`
+  say(restart_message)
   sleep(TIME_INTERVAL_SECONDS)
-  puts break_message
-  `#{break_command}`
-  message_box(break_message)
+  display_message(break_message)
   sleep(BREAK_INTERVAL_SECONDS)
-  puts break_is_over_message
-  `#{break_is_over_command}`
-  message_box(break_is_over_message)
+  display_message(break_is_over_message)
   break unless confirm_dialog("Continue working ????")
 }

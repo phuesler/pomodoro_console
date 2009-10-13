@@ -1,0 +1,8 @@
+Simple script that uses OSX's say method and dialog boxes to use the pomodoro technique http://www.pomodorotechnique.com/
+
+TODOS:
+- Pass arguments to script
+	- Time interval
+	- Break time
+	- Voice
+	- Output (textual, audio, dialog boxes)
